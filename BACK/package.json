@@ -1,0 +1,12 @@
+{
+  "name": "pedidos-express-back",
+  "version": "1.0.0",
+  "description": "Sistema de pedidos express para chifa",
+  "license": "ISC",
+  "author": "Johana Toledo",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
