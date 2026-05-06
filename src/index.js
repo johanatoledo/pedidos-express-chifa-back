@@ -11,21 +11,74 @@ const app = express();
 const PORT = process.env.PORT || 4001;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
-app.use(
-  cors({
-    origin: FRONTEND_URL,
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+
+
+
+// ==========================================
+// CONFIGURACIÓN DE ORIGINS PERMITIDOS
+// ==========================================
+const allowedOrigins = [
+  FRONTEND_URL,
+  'http://localhost:4001',
+  'http://localhost:3000'
+  
+];
+// ==========================================
+// CONFIGURACIÓN DE CORS 
+// ==========================================
+const corsOptions = {
+  origin: function(origin, callback) {
+    
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+  
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(`CORS bloqueado para origen: ${origin}`);
+    }
+    
+    return callback(new Error('CORS no permitido'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers',
+    'Bypass-Tunnel-Reminder'
+  ],
+  exposedHeaders: ['Content-Length', 'X-JSON-Response'],
+  maxAge: 86400 
+};
+
+// Aplicar CORS globalmente
+app.use(cors(corsOptions));
+
 
 app.use(express.json());
 
+// ==========================================
+// Verificacion de funcionamiento de rutas 
+// ==========================================
 app.get("/", (req, res) => {
   res.json({
     message: "API Chifa Express funcionando correctamente",
   });
 });
+
+
+// ==========================================
+// Verificacion de conexion con base de datos
+// ==========================================
 
 app.get("/api/health", async (req, res) => {
   try {
@@ -43,14 +96,41 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
+// ==========================================
+// DEFINICIÓN DE ENDPOINTS
+// ==========================================
 app.use("/api/pedidos", pedidosRoutes);
 
+
+// ==========================================
+// Manejo de errores 
+// ==========================================
+ // Error de rutas
 app.use((req, res) => {
   res.status(404).json({
     message: "Ruta no encontrada",
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+ // Error de CORS
+app.use((err, req, res, next) => {
+ 
+  if (err.message === 'CORS no permitido') {
+    return res.status(403).json({
+      error: 'CORS Error',
+      message: 'El origen de tu request no está permitido'
+    });
+  }
+  
+  console.error('Error:', err);
+  res.status(500).json({ error: 'Error interno del servidor' });
+});
+
+
+// ==========================================
+// INICIAR SERVIDOR
+// ==========================================
+app.listen(PORT,"0.0.0.0",() => {
+  console.log(`Server running on port ${PORT}`);
+
 });
