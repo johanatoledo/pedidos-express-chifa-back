@@ -13,10 +13,10 @@ export async function crearPedidoModel({
     VALUES (?, ?, ?, ?, ?)
     `,
     [
-      clienteNombre,
+      cliente_nombre,            // Corregido: antes decía clienteNombre
       JSON.stringify(productos),
       total,
-      yapeOperacion,
+      yape_operacion,           // Corregido: antes decía yapeOperacion
       "preparando",
     ]
   );
