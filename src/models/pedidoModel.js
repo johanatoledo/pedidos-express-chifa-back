@@ -1,10 +1,10 @@
 import { db } from "../config/db.js";
 
 export async function crearPedidoModel({
-  clienteNombre,
+  cliente_nombre,
   productos,
   total,
-  yapeOperacion,
+  yape_operacion,
 }) {
   const [result] = await db.query(
     `

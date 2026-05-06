@@ -8,9 +8,9 @@ import {
 
 export async function crearPedido(req, res) {
   try {
-    const { clienteNombre, productos, total, yapeOperacion } = req.body;
+    const { cliente_nombre, productos, total, yape_operacion } = req.body;
 
-    if (!clienteNombre || !Array.isArray(productos) || productos.length === 0) {
+    if (!cliente_nombre || !Array.isArray(productos) || productos.length === 0) {
       return res.status(400).json({
         message: "El nombre del cliente y los productos son obligatorios",
       });
@@ -22,17 +22,17 @@ export async function crearPedido(req, res) {
       });
     }
 
-    if (!yapeOperacion) {
+    if (!yape_operacion) {
       return res.status(400).json({
         message: "El ID de operación Yape es obligatorio",
       });
     }
 
     const pedidoId = await crearPedidoModel({
-      clienteNombre,
+      cliente_nombre,
       productos,
       total,
-      yapeOperacion,
+      yape_operacion,
     });
 
     return res.status(201).json({
