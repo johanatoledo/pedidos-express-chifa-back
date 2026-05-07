@@ -68,20 +68,18 @@ export async function obtenerPedidoPorId(req, res) {
   try {
     const { id } = req.params; // Next.js enviará el ID aquí
 
-    const [rows] = await db.query(
-      "SELECT * FROM pedidos WHERE id = ?",
-      [id]
-    );
+    await actualizarPedidosListosModel();
 
-    if (rows.length === 0) {
+    const pedido = await obtenerPedidoPorIdModel(id);
+
+    if (!pedido) {
       return res.status(404).json({ message: "Pedido no encontrado" });
     }
 
-    // Importante: Al ser una fila de MySQL, devolvemos el primer elemento
-    res.json(rows[0]); 
+    return res.status(200).json(pedido);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error al obtener el pedido" });
+    return res.status(500).json({ message: "Error al obtener el pedido" });
   }
 }
 
